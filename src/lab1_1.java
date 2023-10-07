@@ -29,4 +29,6 @@ public class lab1_1{
             k++;
         }
     }
+
+    Package lab0;
 }
