@@ -14,7 +14,7 @@ public class Main{
             System.out.print(array[i] + " ");
         }
         System.out.println();
-        insertionSort.insertion_sort_1(array);
+        bubbleSort.bubble_sort_2(array);
         for(int i = 0; i < array.length; i++) {
             System.out.print(array[i] + " ");
         }

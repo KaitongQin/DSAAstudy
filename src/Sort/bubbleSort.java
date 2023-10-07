@@ -25,4 +25,15 @@ public class bubbleSort{
             }
         }
     }
+    public static void bubble_sort_2(int[] array) {
+        for(int i = 1; i < array.length; i++) {
+            for(int j = 0; j < array.length - i; j++) {
+                if(array[j] > array[j+1]) {
+                    int tmp = array[j+1];
+                    array[j+1] = array[j];
+                    array[j] = tmp;
+                }
+            }
+        }
+    }
 }
