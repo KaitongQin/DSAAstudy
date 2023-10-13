@@ -12,13 +12,21 @@ public class lab3_5{
             array[i] = in.nextInt();
         }
         merge(array, tmp, 0, n - 1);
-        int k = array[n/3];//1,2,3,4,5,6,7,8,9; k = 3
+        int k = array[n/3];//1 2 2 3 3 3; 1 1 1 2 2 3 3
         out.println(k);
         int[] arr = new int[n];
         int j = 0;
-        int l = n / 3;
+        int l = n / 3;// 1 2 2 1 3 3 3
+        int l1 = 0;
         for(int i = 0; i < n; i++) {
-            if(j < n / 3) {
+            if(array[i] == k && i <= n / 3) {
+                l1 = i;
+                l = i;
+                break;
+            }
+        }
+        for(int i = 0; i < n; i++) {
+            if(j < l1) {
                 if((i + 1) % 3 == 1) {
                     arr[i] = array[j];
                     j++;

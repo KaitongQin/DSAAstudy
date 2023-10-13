@@ -11,8 +11,12 @@ public class lab3_4{
         for(int i = 0;i<n;i++){
             a[i] = in.nextInt();
         }
-        int ak = QuickSort(0,n-1,k,a);
-        out.print(ak);
+        if(n == 1) {
+            out.println(a[0]);
+        } else {
+            int ak = QuickSort(0,n-1,k,a);
+            out.print(ak);
+        }
         out.close();
     }
     public static int QuickSort(int l, int r, int k,int[] a){
