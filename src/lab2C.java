@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class lab3_3 {
+public class lab2C{
     public static void main(String[] args) {
         QReader5 in = new QReader5();
         QWriter5 out = new QWriter5();

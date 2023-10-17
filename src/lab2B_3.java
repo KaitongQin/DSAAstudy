@@ -1,68 +1,55 @@
 import java.io.*;
 import java.util.*;
 
-public class lab3_2_2{
+public class lab2B_3{
     public static void main(String[] args) {
-        QReader8 in = new QReader8();
-        QWriter8 out = new QWriter8();
+        QReader4 in = new QReader4();
+        QWriter4 out = new QWriter4();
         int n = in.nextInt();
         long[] a = new long[n];
+        long[] b = new long[n];
         for(int i = 0;i<n;i++){
             a[i] = in.nextInt();
         }
-        sort(a);
-        if(n % 2 == 0) {
-            out.println(a[n/2] + a[n/2 - 1]);
-        } else {
-            out.println(a[n/2]*2);
+        for(int i = 0;i<n;i++){
+            b[i] = a[i];
+        }
+        if(n%2==0){
+            long ak = QuickSort(0,n-1,n/2+1,a);
+            long ak2 = QuickSort(0,n-1,n/2,b);
+            out.println(ak+ak2);
+        }else{
+            long ak1 = QuickSort(0,n-1,n/2+1,a);
+            out.println(2*ak1);
         }
         out.close();
     }
-    public static void sort(long[] array) {
-        long[] tmp = new long[array.length];
-        merge(array, tmp, 0, array.length - 1);
-    }
-    public static void merge(long[] array, long[] tmp, int left, int right) {
-        if(left >= right) {
-            return;
-        }
-        int mid = (left + right) / 2;
-        merge(array, tmp, left, mid);
-        merge(array, tmp, mid + 1, right);
-        merge_sort(array, tmp, left, mid, right);
-    }
-    public static void merge_sort(long[] array, long[] tmp, int left, int mid, int right) {
-        int i = left;
-        int j = mid + 1;
-        int k = left;
-        while(i <= mid && j <= right) {
-            if(array[i] < array[j]) {
-                tmp[k] = array[i];
+    public static long QuickSort(int l, int r, int k,long[] a){
+        if(l>=r)
+            return a[l];
+        int i = l-1;
+        int j = r+1;
+        long t = a[(i+j)/2];
+        while(i<j){
+            do {
                 i++;
-                k++;
-            } else {
-                tmp[k] = array[j];
-                j++;
-                k++;
+            } while(a[i]<t);
+            do {
+                j--;
+            }while(a[j]>t);
+            if(i<=j){
+                long tmp = a[i];
+                a[i] = a[j];
+                a[j] = tmp;
             }
         }
-        while(i <= mid) {
-            tmp[k] = array[i];
-            i++;
-            k++;
-        }
-        while(j <= right) {
-            tmp[k] = array[j];
-            j++;
-            k++;
-        }
-        while(left <= right) {
-            array[left] = tmp[left];
-            left++;
-        }
+        if(j-l+1>=k)
+            return QuickSort(l,j,k,a);
+        else
+            return QuickSort(j+1,r,k-(j-l+1),a);
     }
 }
-class QWriter8 implements Closeable{
+class QWriter4 implements Closeable{
     private BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
 
     public void print(Object object){
@@ -91,7 +78,7 @@ class QWriter8 implements Closeable{
         }
     }
 }
-class QReader8{
+class QReader4{
     private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private StringTokenizer tokenizer = new StringTokenizer("");
 
@@ -132,5 +119,4 @@ class QReader8{
         return Long.parseLong(next());
     }
 }
-
 

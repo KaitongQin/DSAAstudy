@@ -1,9 +1,7 @@
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class lab3_2_1{
+public class lab2B_1{
     public static void main(String[] args){
         Scanner in = new Scanner(System.in);
         int n = in.nextInt();

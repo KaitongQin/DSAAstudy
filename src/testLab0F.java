@@ -1,6 +1,6 @@
 import java.util.Random;
 
-public class testLab1_6 {
+public class testLab0F {
     private static final String[] RANKS = {"1", "2", "3", "4", "5", "6", "7","8","9"};
     private static final String[] SUITS = {"w", "b", "s", "z"};
 

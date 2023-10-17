@@ -1,39 +1,53 @@
 import java.io.*;
 import java.util.*;
 
-public class lab1_2 {
+public class lab2A_1 {
     public static void main(String[] args) {
-        QReader in = new QReader();
-        QWriter out = new QWriter();
-        int n = in.nextInt();
-        int[] a = new int[n];
-        int[] c = new int[100001];
-        int[] d = new int[100001];
-        for(int i = 0;i<n;i++){
-            a[i]=in.nextInt();
-            c[a[i]]++;
-        }
+        QReader1 in = new QReader1();
+        QWriter1 out = new QWriter1();
         int T = in.nextInt();
-        int[] b = new int[T];
-        boolean[] B = new boolean[T];
-        for(int j = 0;j < T;j++){
-            b[j] = in.nextInt();
-            d[b[j]]++;
-            if(c[b[j]]>0)
-                B[j]=true;
-        }
         for(int i = 0;i<T;i++){
-            if(B[i]){
-                out.println("yes");
-            }else{
-                out.println("no");
+            int n = in.nextInt();
+            int m = in.nextInt();
+            int[] an = new int[n];
+            int[] am = new int[m];
+            for(int j = 0;j<n;j++){
+                an[j] = in.nextInt();
             }
+            for(int j = 0;j<m;j++){
+                am[j] = in.nextInt();
+            }
+            int[] amn = new int[m+n];
+            int j = 0;
+            int k = 0;
+            while(j<n&&k<m){
+                if(an[j]<=am[k]){
+                    amn[j+k] = an[j];
+                    j++;
+                }else{
+                    amn[j+k] = am[k];
+                    k++;
+                }
+            }
+            while(j<n){
+                amn[j+k] = an[j];
+                j++;
+            }
+            while(k<m){
+                amn[j+k] = am[k];
+                k++;
+            }
+            for(int i1 = 0;i1<m+n-1;i1++){
+                out.print(amn[i1]+" ");
+            }
+            out.print(amn[m+n-1]);
+            out.print('\n');
         }
         out.close();
     }
 }
 
-class QReader {
+class QReader1 {
     private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private StringTokenizer tokenizer = new StringTokenizer("");
 
@@ -75,7 +89,7 @@ class QReader {
     }
 }
 
-class QWriter implements Closeable {
+class QWriter1 implements Closeable {
     private BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
 
     public void print(Object object) {

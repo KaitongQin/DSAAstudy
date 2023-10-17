@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class lab2_5{
+public class lab1E{
     public static void main(String[] args){
         Scanner in = new Scanner(System.in);
         while(in.hasNextLine()){

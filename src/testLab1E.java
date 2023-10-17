@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class testLab2_5 {
+public class testLab1E {
     public static void main(String[] args) {
         int L = generateRandomNumber(1, 1000000000);
         int n = generateRandomNumber(0, 500000);
