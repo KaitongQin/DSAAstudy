@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Main{
     public static void main(String[] args){
-        int[] array = new int[8];
+        int[] array = new int[50];
         for(int i = 0; i < array.length; i++) {
             array[i] = ThreadLocalRandom.current().nextInt(0,100);
         }
@@ -14,7 +14,8 @@ public class Main{
             System.out.print(array[i] + " ");
         }
         System.out.println();
-        shellSort.shell_sort(array);
+        Arrays.sort(array);
+        System.out.println(array[25] + array[24]);
         for(int i = 0; i < array.length; i++) {
             System.out.print(array[i] + " ");
         }

@@ -41,7 +41,7 @@ public class lab2C{
                 tmp[left2] = a[right1];
                 right1++;
                 left2++;
-                ans+= mid -left1 + 1;
+                ans+= mid - left1 + 1;
             }
         }
         while(left1 <= mid){
