@@ -10,6 +10,7 @@ public class lab5B{
         next[0] = 0;
         int k = 0;
         int j = k;
+
         for(int i = 1; i < s.length(); i++) {
             while(k > 0 && s.charAt(i) != s.charAt(k)) {
                 j = next[k - 1];
