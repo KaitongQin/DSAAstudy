@@ -1,110 +1,164 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class lab6F{
-    public static void main(String[] args){
-        QReader in = new QReader();
-        QWriter out = new QWriter();
-        int n = in.nextInt();
-        node[] tree = new node[n + 1];
-        for(int i = 1; i <= n; i++) {
-            tree[i] = new node(i);
+    static class node{
+        int index;
+        int p;
+        boolean visited;
+        ArrayList<node> son = new ArrayList <>();
+    }
+    static class Queue{
+        int[] array;
+        int front;
+        int rear;
+        public Queue(int n) {
+            array = new int[n];
+            front = -1;
+            rear = -1;
         }
-        for(int i = 1; i <= n; i++) {
+        public void enQueue(int value) {
+            rear++;
+            array[rear] = value;
+        }
+        public void deQueue() {
+            front++;
+        }
+        public int getTop() {
+            int tmp = front + 1;
+            return array[tmp];
+        }
+        public boolean isEmpty() {
+            return rear == front;
+        }
+    }
+    public static void main(String[] args){
+        Scanner in = new Scanner(System.in);
+        int n = in.nextInt();
+        node[] nodes = new node[n + 1];
+        for(int i = 1; i <= n; i++){
+            nodes[i] = new node();
+            nodes[i].index = i;
+        }
+        for(int i = 0; i < n - 1; i++){
             int u = in.nextInt();
             int v = in.nextInt();
-            tree[u].sons.add(tree[v]);
-            tree[v].sons.add(tree[u]);
+            nodes[u].son.add(nodes[v]);
+            nodes[v].son.add(nodes[u]);
         }
-        int[] p = new int[n + 1];
-        int max = 0;
-        for(int i = 1; i <= n; i++) {
-            p[i] = in.nextInt();
-            if(p[i] > p[max]) {
+        int max = 1;
+        for(int i = 1; i <= n; i++){
+            nodes[i].p = in.nextInt();
+            if (nodes[i].p > nodes[max].p) {
                 max = i;
             }
         }
-
-    }
-    static class node{
-        boolean invited;
-        int key;
-        ArrayList<node> sons;
-        public node(int key) {
-            this.key = key;
-            invited = false;
-            sons = new ArrayList<>();
+        dfs(nodes[max]);
+        for(int i = 1; i <= n; i++){
+            nodes[i].visited = false;
         }
-    }
-    private static class QReader{
-        private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        private StringTokenizer tokenizer = new StringTokenizer("");
-
-        private String innerNextLine() {
-            try {
-                return reader.readLine();
-            } catch (IOException e) {
-                return null;
+        Queue queue = new Queue(n + 1);
+        ArrayList <node> leaves = new ArrayList <>();
+        for(int i = 0; i < nodes[max].son.size(); i++){
+            nodes[max].son.get(i).visited = true;
+            queue.enQueue(nodes[max].son.get(i).index);
+        }
+        nodes[max].visited = true;
+        while (! queue.isEmpty()) {
+            int head = queue.getTop();
+            nodes[head].visited = true;
+            int pHead = nodes[head].p;
+            ArrayList <node> sonNode = new ArrayList <>();
+            for(int i = 0; i < nodes[head].son.size(); i++){
+                if (nodes[head].son.get(i).visited) continue;
+                int index = nodes[head].son.get(i).index;
+                queue.enQueue(index);
+                sonNode.add(nodes[head].son.get(i));
             }
-        }
-
-        public boolean hasNext() {
-            while (!tokenizer.hasMoreTokens()) {
-                String nextLine = innerNextLine();
-                if (nextLine == null) {
-                    return false;
+            if (sonNode.size() != 0) {
+                int maxi = sonNode.get(0).index;
+                for(int i = 0; i < sonNode.size(); i++){
+                    if (sonNode.get(i).p > nodes[maxi].p) {
+                        maxi = sonNode.get(i).index;
+                    }
                 }
-                tokenizer = new StringTokenizer(nextLine);
+                nodes[maxi].p = pHead;
+            } else {
+                leaves.add(nodes[head]);
             }
-            return true;
+            queue.deQueue();
         }
-
-        public String nextLine() {
-            tokenizer = new StringTokenizer("");
-            return innerNextLine();
+        long ans = 0;
+        int[] array = new int[leaves.size()];
+        for(int i = 0; i < leaves.size(); i++){
+            array[i] = leaves.get(i).p;
+            ans += array[i];
         }
-
-        public String next() {
-            hasNext();
-            return tokenizer.nextToken();
-        }
-
-        public int nextInt() {
-            return Integer.parseInt(next());
-        }
-
-        public long nextLong() {
-            return Long.parseLong(next());
+        mergeSort(array);
+        if (n == 2) {
+            System.out.println(nodes[1].p + nodes[2].p);
+        } else {
+            if (nodes[max].son.size() == 1) {
+                ans = ans + nodes[max].p * 2L - array[array.length - 1];
+            } else {
+                ans = ans + nodes[max].p * 2L - array[array.length - 1] - array[array.length - 2];
+            }
+            System.out.println(ans);
         }
     }
-    private static class QWriter implements Closeable{
-        private BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
-
-        public void print(Object object) {
-            try {
-                writer.write(object.toString());
-            } catch (IOException e) {
-                return;
+    public static void dfs(node head) {
+        head.visited = true;
+        for(int i = 0; i < head.son.size(); i++) {
+            if(head.son.get(i).visited) continue;
+            dfs(head.son.get(i));
+            if(head.son.get(i).p > head.p) {
+                head.p = head.son.get(i).p;
             }
         }
-
-        public void println(Object object) {
-            try {
-                writer.write(object.toString());
-                writer.write("\n");
-            } catch (IOException e) {
-                return;
+    }
+    public static void mergeSort(int[] array) {
+        int[] tmp = new int[array.length];
+        merge(array, tmp, 0, array.length - 1);
+    }
+    public static void merge(int[] array, int[] tmp, int l, int r) {
+        if(l >= r) {
+            return;
+        }
+        int mid = (r + l) / 2;
+        merge(array, tmp, l, mid);
+        merge(array, tmp, mid + 1, r);
+        merge_sort(array, tmp, l, mid, r);
+    }
+    public static void merge_sort(int[] array, int[] tmp, int l, int mid, int r) {
+        int i = l;
+        int j = mid + 1;
+        int k = l;
+        while(i <= mid && j <= r) {
+            if(array[i] <= array[j]) {
+                tmp[k] = array[i];
+                k++;
+                i++;
+            } else {
+                tmp[k] = array[j];
+                k++;
+                j++;
             }
         }
-
-        @Override
-        public void close() {
-            try {
-                writer.close();
-            } catch (IOException e) {
-                return;
-            }
+        while(i <= mid) {
+            tmp[k] = array[i];
+            k++;
+            i++;
+        }
+        while(j <= r) {
+            tmp[k] = array[j];
+            k++;
+            j++;
+        }
+        while(l <= r) {
+            array[l] = tmp[l];
+            l++;
         }
     }
 }
