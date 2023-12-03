@@ -1,7 +1,5 @@
-import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.StringTokenizer;
 
 public class lab6F{
     public static void main(String[] args){
@@ -48,11 +46,11 @@ public class lab6F{
                     queue.enQueue(index);
                     sonNode.add(nodes[head].son.get(i));
                 }
-                if (sonNode.size() != 0) {
+                if (! sonNode.isEmpty()) {
                     int maxi = sonNode.get(0).index;
-                    for(int i = 0; i < sonNode.size(); i++){
-                        if (sonNode.get(i).p >= nodes[maxi].p) {
-                            maxi = sonNode.get(i).index;
+                    for(lab6F.node node : sonNode){
+                        if (node.p >= nodes[maxi].p) {
+                            maxi = node.index;
                         }
                     }
                     nodes[maxi].p = pHead;
@@ -63,9 +61,9 @@ public class lab6F{
                 queue.deQueue();
             }
             int maxP = leaves.get(0).index;
-            for(int i = 0; i < leaves.size(); i++) {
-                if(leaves.get(i).p > nodes[maxP].p) {
-                    maxP = leaves.get(i).index;
+            for(node leaf : leaves){
+                if (leaf.p > nodes[maxP].p) {
+                    maxP = leaf.index;
                 }
             }
             ans.add(maxP);
@@ -139,7 +137,7 @@ public class lab6F{
         }
     }
 
-    static class node{
+    private static class node{
         int index;
         int p;
         boolean visited;
