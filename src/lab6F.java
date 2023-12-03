@@ -4,36 +4,6 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class lab6F{
-    static class node{
-        int index;
-        int p;
-        boolean visited;
-        ArrayList<node> son = new ArrayList <>();
-    }
-    static class Queue{
-        int[] array;
-        int front;
-        int rear;
-        public Queue(int n) {
-            array = new int[n];
-            front = -1;
-            rear = -1;
-        }
-        public void enQueue(int value) {
-            rear++;
-            array[rear] = value;
-        }
-        public void deQueue() {
-            front++;
-        }
-        public int getTop() {
-            int tmp = front + 1;
-            return array[tmp];
-        }
-        public boolean isEmpty() {
-            return rear == front;
-        }
-    }
     public static void main(String[] args){
         Scanner in = new Scanner(System.in);
         int n = in.nextInt();
@@ -59,54 +29,58 @@ public class lab6F{
         for(int i = 1; i <= n; i++){
             nodes[i].visited = false;
         }
-        Queue queue = new Queue(n + 1);
-        ArrayList <node> leaves = new ArrayList <>();
-        for(int i = 0; i < nodes[max].son.size(); i++){
-            nodes[max].son.get(i).visited = true;
-            queue.enQueue(nodes[max].son.get(i).index);
-        }
         nodes[max].visited = true;
-        while (! queue.isEmpty()) {
-            int head = queue.getTop();
-            nodes[head].visited = true;
-            int pHead = nodes[head].p;
-            ArrayList <node> sonNode = new ArrayList <>();
-            for(int i = 0; i < nodes[head].son.size(); i++){
-                if (nodes[head].son.get(i).visited) continue;
-                int index = nodes[head].son.get(i).index;
-                queue.enQueue(index);
-                sonNode.add(nodes[head].son.get(i));
-            }
-            if (sonNode.size() != 0) {
-                int maxi = sonNode.get(0).index;
-                for(int i = 0; i < sonNode.size(); i++){
-                    if (sonNode.get(i).p > nodes[maxi].p) {
-                        maxi = sonNode.get(i).index;
-                    }
+        ArrayList<Integer> ans = new ArrayList <>();
+        long answer = 0;
+        for(int c = 0; c < nodes[max].son.size(); c++){
+            Queue queue = new Queue(n + 1);
+            nodes[max].son.get(c).visited = true;
+            queue.enQueue(nodes[max].son.get(c).index);
+            ArrayList <node> leaves = new ArrayList <>();
+            while (! queue.isEmpty()) {
+                int head = queue.getTop();
+                nodes[head].visited = true;
+                int pHead = nodes[head].p;
+                ArrayList <node> sonNode = new ArrayList <>();
+                for(int i = 0; i < nodes[head].son.size(); i++){
+                    if (nodes[head].son.get(i).visited) continue;
+                    int index = nodes[head].son.get(i).index;
+                    queue.enQueue(index);
+                    sonNode.add(nodes[head].son.get(i));
                 }
-                nodes[maxi].p = pHead;
-            } else {
-                leaves.add(nodes[head]);
+                if (sonNode.size() != 0) {
+                    int maxi = sonNode.get(0).index;
+                    for(int i = 0; i < sonNode.size(); i++){
+                        if (sonNode.get(i).p >= nodes[maxi].p) {
+                            maxi = sonNode.get(i).index;
+                        }
+                    }
+                    nodes[maxi].p = pHead;
+                } else {
+                    leaves.add(nodes[head]);
+                    answer += nodes[head].p;
+                }
+                queue.deQueue();
             }
-            queue.deQueue();
+            int maxP = leaves.get(0).index;
+            for(int i = 0; i < leaves.size(); i++) {
+                if(leaves.get(i).p > nodes[maxP].p) {
+                    maxP = leaves.get(i).index;
+                }
+            }
+            ans.add(maxP);
         }
-        long ans = 0;
-        int[] array = new int[leaves.size()];
-        for(int i = 0; i < leaves.size(); i++){
-            array[i] = leaves.get(i).p;
-            ans += array[i];
+        int[] a = new int[ans.size()];
+        for(int i = 0; i < ans.size(); i++) {
+            a[i] = nodes[ans.get(i)].p;
         }
-        mergeSort(array);
-        if (n == 2) {
-            System.out.println(nodes[1].p + nodes[2].p);
+        mergeSort(a);
+        if(nodes[max].son.size() == 1) {
+            answer = answer + nodes[max].p * 2L - a[a.length - 1];
         } else {
-            if (nodes[max].son.size() == 1) {
-                ans = ans + nodes[max].p * 2L - array[array.length - 1];
-            } else {
-                ans = ans + nodes[max].p * 2L - array[array.length - 1] - array[array.length - 2];
-            }
-            System.out.println(ans);
+            answer = answer + nodes[max].p * 2L - a[a.length - 1] - a[a.length - 2];
         }
+        System.out.println(answer);
     }
     public static void dfs(node head) {
         head.visited = true;
@@ -118,10 +92,12 @@ public class lab6F{
             }
         }
     }
+
     public static void mergeSort(int[] array) {
         int[] tmp = new int[array.length];
         merge(array, tmp, 0, array.length - 1);
     }
+
     public static void merge(int[] array, int[] tmp, int l, int r) {
         if(l >= r) {
             return;
@@ -131,6 +107,7 @@ public class lab6F{
         merge(array, tmp, mid + 1, r);
         merge_sort(array, tmp, l, mid, r);
     }
+
     public static void merge_sort(int[] array, int[] tmp, int l, int mid, int r) {
         int i = l;
         int j = mid + 1;
@@ -159,6 +136,38 @@ public class lab6F{
         while(l <= r) {
             array[l] = tmp[l];
             l++;
+        }
+    }
+
+    static class node{
+        int index;
+        int p;
+        boolean visited;
+        ArrayList<node> son = new ArrayList <>();
+    }
+
+    static class Queue{
+        int[] array;
+        int front;
+        int rear;
+        public Queue(int n) {
+            array = new int[n];
+            front = -1;
+            rear = -1;
+        }
+        public void enQueue(int value) {
+            rear++;
+            array[rear] = value;
+        }
+        public void deQueue() {
+            front++;
+        }
+        public int getTop() {
+            int tmp = front + 1;
+            return array[tmp];
+        }
+        public boolean isEmpty() {
+            return rear == front;
         }
     }
 }
