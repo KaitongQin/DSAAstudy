@@ -1,14 +1,10 @@
-import java.io.*;
-import java.util.StringTokenizer;
-
-public class lab7E{
+public class AVLTree{
     static class treeNode{
         treeNode father;
         treeNode leftSon;
         treeNode rightSon;
         int value;
         int height;
-        int info;
         public treeNode (int value) {
             this.value = value;
             this.height = 1;
@@ -24,30 +20,6 @@ public class lab7E{
                 return 0;
             }
             return leftSon.height;
-        }
-        public int getInfo(treeNode node) {
-            if (node == null) {
-                return 0;
-            }
-            if (node.leftSon == null && node.rightSon == null) {
-                return 1;
-            } else if (node.leftSon == null) {
-                return node.rightSon.info + 1;
-            } else if (node.rightSon == null) {
-                return node.leftSon.info + 1;
-            } else {
-                return node.leftSon.info + node.rightSon.info + 1;
-            }
-        }
-        public treeNode searchByInfo(int info, treeNode node) {
-            int a = node.getInfo(node.leftSon);
-            if (info == a + 1) {
-                return node;
-            }
-            if (info <= a) {
-                return searchByInfo(info, node.leftSon);
-            }
-            return searchByInfo(info - a - 1, node.rightSon);
         }
         public int getBalance (treeNode node) {
             if (node == null) {
@@ -65,12 +37,10 @@ public class lab7E{
                     root.leftSon = tmp.rightSon;
                 }
                 root.height = Math.max(tmp.getRightHeight(), root.getRightHeight()) + 1;
-                root.info = getInfo(root);
                 tmp.rightSon = root;
                 root.father = tmp;
                 tmp.father = null;
                 tmp.height = Math.max(tmp.getLeftHeight(), root.height) + 1;
-                tmp.info = getInfo(tmp);
             } else {
                 treeNode f = root.father;
                 if (tmp.rightSon == null) {
@@ -80,7 +50,6 @@ public class lab7E{
                     root.leftSon = tmp.rightSon;
                 }
                 root.height = Math.max(tmp.getRightHeight(), root.getRightHeight()) + 1;
-                root.info = getInfo(root);
                 tmp.rightSon = root;
                 root.father = tmp;
                 tmp.father = f;
@@ -90,7 +59,6 @@ public class lab7E{
                     f.rightSon = tmp;
                 }
                 tmp.height = Math.max(tmp.getLeftHeight(), root.height) + 1;
-                tmp.info = getInfo(tmp);
             }
             return tmp;
         }
@@ -104,12 +72,10 @@ public class lab7E{
                     root.rightSon = tmp.leftSon;
                 }
                 root.height = Math.max(tmp.getLeftHeight(), root.getLeftHeight()) + 1;
-                root.info = getInfo(root);
                 tmp.leftSon = root;
                 root.father = tmp;
                 tmp.father = null;
                 tmp.height = Math.max(tmp.getRightHeight(), root.height) + 1;
-                tmp.info = getInfo(tmp);
             } else {
                 treeNode f = root.father;
                 if (tmp.leftSon == null) {
@@ -119,17 +85,15 @@ public class lab7E{
                     root.rightSon = tmp.leftSon;
                 }
                 root.height = Math.max(tmp.getLeftHeight(), root.getLeftHeight()) + 1;
-                root.info = getInfo(root);
                 tmp.leftSon = root;
                 root.father = tmp;
                 tmp.father = f;
-                if (f.value >= tmp.value) {
+                if (f.value > tmp.value) {
                     f.leftSon = tmp;
                 } else {
                     f.rightSon = tmp;
                 }
                 tmp.height = Math.max(tmp.getRightHeight(), root.height) + 1;
-                tmp.info = getInfo(tmp);
             }
             return tmp;
         }
@@ -152,31 +116,29 @@ public class lab7E{
                     insert(root.leftSon, newNode);
                 }
             }
-            newNode.info = getInfo(newNode);
             root.height = Math.max(root.getRightHeight(), root.getLeftHeight()) + 1;
-            root.info = getInfo(root);
             int balance = root.getBalance(root);
             if (balance == -2 && newNode.value < root.rightSon.value) {
                 root.rightSon = root.rightSon.rightRotate(root.rightSon);
-                return leftRotate(root);
+                return root.leftRotate(root);
             } else if (balance == 2 && newNode.value > root.leftSon.value) {
-                root.leftSon = leftRotate(root.leftSon);
-                return rightRotate(root);
+                root.leftSon = root.leftSon.leftRotate(root.leftSon);
+                return root.rightRotate(root);
             } else if (balance == -2) {
-                return leftRotate(root);
+                return root.leftRotate(root);
             } else if (balance == 2) {
-                return rightRotate(root);
+                return root.rightRotate(root);
             }
             return root;
         }
         public treeNode delete (treeNode root, int value) {
             if (root == null) {
-                return null;
+                return root;
             }
             if (value > root.value) {
-                root.rightSon = delete(root.rightSon, value);
+                root.rightSon = root.delete(root.rightSon, value);
             } else if (value < root.value) {
-                root.leftSon = delete(root.leftSon, value);
+                root.leftSon = root.delete(root.leftSon, value);
             } else {
                 if (root.rightSon == null && root.leftSon == null) {
                     if (root.father.value > value) {
@@ -205,129 +167,44 @@ public class lab7E{
                     root = root.leftSon;
                 } else {
                     treeNode right = root.rightSon;
-                    treeNode tmp = right;
                     while (right.leftSon != null) {
                         right = right.leftSon;
                     }
                     root.value = right.value;
-                    root.rightSon = delete(tmp, right.value);
+                    delete(right, right.value);
                 }
             }
             if (root != null) {
                 root.height = Math.max(root.getRightHeight(), root.getLeftHeight()) + 1;
-                root.info = getInfo(root);
-                int balance = getBalance(root);
+                int balance = root.getBalance(root);
                 if (balance == 2 && root.leftSon.getBalance(root.leftSon) == -1) {
-                    root.leftSon = leftRotate(root.leftSon);
-                    return rightRotate(root);
+                    root.leftSon = root.leftSon.leftRotate(root.leftSon);
+                    return root.rightRotate(root);
                 } else if (balance == -2 && root.rightSon.getBalance(root.rightSon) == 1) {
-                    root.rightSon = rightRotate(root.rightSon);
-                    return leftRotate(root);
+                    root.rightSon = root.rightSon.rightRotate(root.rightSon);
+                    return root.leftRotate(root);
                 } else if (balance == 2) {
-                    return rightRotate(root);
+                    return root.rightRotate(root);
                 } else if (balance == -2) {
-                    return leftRotate(root);
+                    return root.leftRotate(root);
                 }
             }
             return root;
         }
     }
+
     public static void main(String[] args){
-        QReader in = new QReader();
-        QWriter out = new QWriter();
-        int m = in.nextInt();
-        int k = in.nextInt();
-        int[] array = new int[m];
-        for (int i = 0; i < m; i++) {
-            array[i] = in.nextInt();
-        }
-        int[] index = new int[m - k + 1];
-        for (int i = 0; i < m - k + 1; i++) {
-            index[i] = in.nextInt();
-        }
-        treeNode root = new treeNode(array[0]);
-        for (int i = 1; i < k; i++) {
-            root = root.insert(root, new treeNode(array[i]));
-        }
-        for (int i = 0; i < m - k + 1; i++) {
-            treeNode tmp = root.searchByInfo(index[i], root);
-            out.println(tmp.value);
-            root = root.delete(root, array[i]);
-            if (i != m - k) {
-                root = root.insert(root, new treeNode(array[k + i]));
-            }
-        }
-        out.close();
-    }
-
-    private static class QReader{
-        private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        private StringTokenizer tokenizer = new StringTokenizer("");
-
-        private String innerNextLine() {
-            try {
-                return reader.readLine();
-            } catch (IOException e) {
-                return null;
-            }
-        }
-
-        public boolean hasNext() {
-            while (!tokenizer.hasMoreTokens()) {
-                String nextLine = innerNextLine();
-                if (nextLine == null) {
-                    return false;
-                }
-                tokenizer = new StringTokenizer(nextLine);
-            }
-            return true;
-        }
-
-        public String nextLine() {
-            tokenizer = new StringTokenizer("");
-            return innerNextLine();
-        }
-
-        public String next() {
-            hasNext();
-            return tokenizer.nextToken();
-        }
-
-        public int nextInt() {
-            return Integer.parseInt(next());
-        }
-
-        public long nextLong() {
-            return Long.parseLong(next());
-        }
-    }
-    private static class QWriter implements Closeable{
-        private BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
-
-        public void print(Object object) {
-            try {
-                writer.write(object.toString());
-            } catch (IOException e) {
-                return;
-            }
-        }
-
-        public void println(Object object) {
-            try {
-                writer.write(object.toString());
-                writer.write("\n");
-            } catch (IOException e) {
-                return;
-            }
-        }
-
-        @Override
-        public void close() {
-            try {
-                writer.close();
-            } catch (IOException e) {
-                return;
-            }
-        }
+        treeNode root = new treeNode(1);
+        root = root.insert(root, new treeNode(2));
+        root = root.insert(root, new treeNode(3));
+        root = root.insert(root, new treeNode(4));
+        root = root.insert(root, new treeNode(5));
+        root = root.insert(root, new treeNode(6));
+        root = root.insert(root, new treeNode(7));
+        root = root.insert(root, new treeNode(8));
+        root = root.insert(root, new treeNode(9));
+        root = root.delete(root, 4);
+        root = root.delete(root, 1);
+        System.out.println(root.value);
     }
 }
