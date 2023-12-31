@@ -6,21 +6,21 @@ public class lab9A{
     static class node{
         int value;
         long dis;
-        boolean visited;
         ArrayList<edge> edges;
         public node(int value) {
             this.value = value;
             dis = Long.MAX_VALUE;
-            visited = false;
             edges = new ArrayList<>();
         }
     }
 
     static class edge{
+        node u;
         node v;
-        int w;
-        public edge(int w, node v){
+        long w;
+        public edge(long w, node u, node v){
             this.w = w;
+            this.u = u;
             this.v = v;
         }
     }
@@ -29,19 +29,91 @@ public class lab9A{
         int n = in.nextInt();
         int m = in.nextInt();
         node[] nodes = new node[n + 1];
-        for (int i = 1; i <= n; i++) {
+        for (int i = 0; i <= n; i++) {
             nodes[i] = new node(i);
-
         }
         for (int i = 1; i <= m; i++) {
             int u = in.nextInt();
             int v = in.nextInt();
             int w = in.nextInt();
-            nodes[u].edges.add(new edge(w, nodes[v]));
-            nodes[v].edges.add(new edge(w, nodes[w]));
+            nodes[u].edges.add(new edge(w, nodes[u], nodes[v]));
+        }
+        nodes[1].dis = 0;
+        edge[] heap = new edge[m + 1];
+        heap[0] = new edge(0, null,null);
+        for (int i = 1; i <= m; i++) {
+            heap[i] = new edge(Long.MAX_VALUE, null, null);
+        }
+        for (int i = 0; i < nodes[1].edges.size(); i++) {
+            enHeap(heap, nodes[1].edges.get(i));
+            heap[0].w += 1;
+            nodes[1].edges.get(i).v.dis = nodes[1].edges.get(i).w;
+        }
+        while (heap[0].w != 0) {
+            edge tmp = deHeap(heap);
+            heap[0].w -= 1;
+            for (int i = 0; i < tmp.v.edges.size(); i++) {
+                if (tmp.v.edges.get(i).w + tmp.v.dis < tmp.v.edges.get(i).v.dis) {
+                    tmp.v.edges.get(i).v.dis = tmp.v.edges.get(i).w + tmp.v.dis;
+                    enHeap(heap, tmp.v.edges.get(i));
+                    heap[0].w += 1;
+                }
+            }
+        }
+        if (nodes[n].dis != Long.MAX_VALUE) {
+            System.out.println(nodes[n].dis);
+        } else {
+            System.out.println(-1);
+        }
+
+    }
+    public static void enHeap(edge[] edges, edge newEdge) {
+        int k = (int) edges[0].w + 1;
+        edges[k] = new edge(newEdge.w, newEdge.u, newEdge.v);
+        while (k > 1) {
+            if (edges[k].w < edges[k / 2].w) {
+                edge tmp = edges[k];
+                edges[k] = edges[k / 2];
+                edges[k / 2] = tmp;
+                k /=2;
+            } else {
+                break;
+            }
         }
     }
-
+    public static edge deHeap(edge[] edges) {
+        edge tmp = edges[1];
+        edges[1] = edges[(int) edges[0].w];
+        edges[(int) edges[0].w] = new edge(Long.MAX_VALUE, null, null);
+        int i = 1;
+        while (i * 2L < edges[0].w) {
+            if (i * 2L < edges[0].w - 1) {
+                if (edges[i].w > edges[i * 2].w) {
+                    edge t = edges[i];
+                    edges[i] = edges[i * 2];
+                    edges[i * 2] = t;
+                }
+                break;
+            }
+            if(edges[i].w > Math.min(edges[i * 2].w, edges[i * 2 + 1].w))  {
+                if(edges[i * 2].w == Math.min(edges[i * 2].w, edges[i * 2 + 1].w)) {
+                    edge t = edges[i];
+                    edges[i] = edges[i * 2];
+                    edges[i * 2] = t;
+                    i *= 2;
+                } else {
+                    edge t = edges[i];
+                    edges[i] = edges[i * 2 + 1];
+                    edges[i * 2 + 1] = t;
+                    i = i * 2 + 1;
+                }
+            } else {
+                break;
+            }
+        }
+        return tmp;
+    }
+    
     private static class QReader{
         private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         private StringTokenizer tokenizer = new StringTokenizer("");
